@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反射神経ゲーム</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #111827;
+        color: white;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .game {
+        width: min(95vw, 600px);
+        text-align: center;
+    }
+    h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+    .info {
+        display: flex;
+        justify-content: space-around;
+        margin: 15px 0;
+        font-size: 18px;
+    }
+    #arena {
+        position: relative;
+        height: 60vh;
+        max-height: 500px;
+        min-height: 350px;
+        background: #1f2937;
+        border: 3px solid #374151;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    #target {
+        position: absolute;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: #ef4444;
+        display: none;
+        cursor: pointer;
+        box-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
+    }
+    button {
+        margin-top: 20px;
+        padding: 14px 30px;
+        border: none;
+        border-radius: 12px;
+        background: #3b82f6;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    button:active {
+        transform: scale(0.95);
+    }
+    #message {
+        margin-top: 15px;
+        min-height: 30px;
+        font-size: 18px;
+    }
+</style>
+</head>
+<body>
+<div class="game">
+    <h1>⚡ 反射神経ゲーム</h1>
+    <div class="info">
+        <div>ROUND: <span id="round">0</span>/10</div>
+        <div>TIME: <span id="time">0.000</span>秒</div>
+    </div>
+    <div id="arena">
+        <div id="target"></div>
+    </div>
+    <button id="start">ゲーム開始！</button>
+    <div id="message">
+        赤い円が出たら、できるだけ早くタップ！
+    </div>
+</div>
+<script>
+const arena = document.getElementById("arena");
+const target = document.getElementById("target");
+const startButton = document.getElementById("start");
+const roundText = document.getElementById("round");
+const timeText = document.getElementById("time");
+const message = document.getElementById("message");
+let round = 0;
+let totalTime = 0;
+let startTime = 0;
+let waitingTimer = null;
+function randomPosition() {
+    const maxX = arena.clientWidth - target.offsetWidth;
+    const maxY = arena.clientHeight - target.offsetHeight;
+    target.style.left = Math.random() * maxX + "px";
+    target.style.top = Math.random() * maxY + "px";
+}
+function showTarget() {
+    randomPosition();
+    target.style.display = "block";
+    startTime = performance.now();
+}
+function nextRound() {
+    if (round >= 10) {
+        target.style.display = "none";
+        const average = totalTime / 10;
+        message.innerHTML =
+            `🎉 終了！<br>合計：${totalTime.toFixed(3)}秒<br>` +
+            `平均：${average.toFixed(3)}秒`;
+        startButton.textContent = "もう一度プレイ";
+        return;
+    }
+    round++;
+    roundText.textContent = round;
+    message.textContent = "準備……";
+    // 0.5〜1.5秒待ってから出現
+    const delay = 500 + Math.random() * 1000;
+    waitingTimer = setTimeout(showTarget, delay);
+}
+target.addEventListener("click", () => {
+    const reaction = (performance.now() - startTime) / 1000;
+    totalTime += reaction;
+    timeText.textContent = reaction.toFixed(3);
+    target.style.display = "none";
+    nextRound();
+});
+startButton.addEventListener("click", () => {
+    clearTimeout(waitingTimer);
+    round = 0;
+    totalTime = 0;
+    roundText.textContent = "0";
+    timeText.textContent = "0.000";
+    startButton.style.display = "none";
+    nextRound();
+});
+</script>
+</body>
+</html>
