@@ -3,146 +3,532 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>反射神経ゲーム</title>
+
+<title>REFLEX BLAST</title>
+
 <style>
-    * {
-        box-sizing: border-box;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #243b55, #0b1020);
+    color: white;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 650px;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: clamp(36px, 10vw, 60px);
+    margin: 0;
+    letter-spacing: 4px;
+}
+
+.subtitle {
+    opacity: 0.7;
+    margin-bottom: 30px;
+}
+
+button {
+    border: none;
+    border-radius: 15px;
+    padding: 15px 35px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background: #3b82f6;
+    box-shadow: 0 7px 0 #1d4ed8;
+    cursor: pointer;
+}
+
+button:active {
+    transform: translateY(5px);
+    box-shadow: 0 2px 0 #1d4ed8;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ゲーム画面 */
+
+#gameScreen {
+    width: 100%;
+}
+
+.status {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.status span {
+    color: #60a5fa;
+}
+
+#arena {
+    position: relative;
+    width: 100%;
+    height: 65vh;
+    min-height: 350px;
+    max-height: 550px;
+
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+#target {
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(circle at 35% 30%, white, #60a5fa 25%, #2563eb 60%, #1e3a8a);
+
+    box-shadow:
+        0 0 15px #60a5fa,
+        0 0 35px #2563eb;
+
+    display: none;
+}
+
+#comboText {
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -50%);
+
+    font-size: 32px;
+    font-weight: bold;
+
+    pointer-events: none;
+
+    opacity: 0;
+}
+
+.comboAnimation {
+    animation: combo 0.5s ease-out;
+}
+
+@keyframes combo {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
     }
-    body {
-        margin: 0;
-        min-height: 100vh;
-        background: #111827;
-        color: white;
-        font-family: system-ui, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+
+    40% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 1;
     }
-    .game {
-        width: min(95vw, 600px);
-        text-align: center;
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
     }
-    h1 {
-        font-size: 32px;
-        margin-bottom: 8px;
-    }
-    .info {
-        display: flex;
-        justify-content: space-around;
-        margin: 15px 0;
-        font-size: 18px;
-    }
-    #arena {
-        position: relative;
-        height: 60vh;
-        max-height: 500px;
-        min-height: 350px;
-        background: #1f2937;
-        border: 3px solid #374151;
-        border-radius: 20px;
-        overflow: hidden;
-    }
-    #target {
-        position: absolute;
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
-        background: #ef4444;
-        display: none;
-        cursor: pointer;
-        box-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
-    }
-    button {
-        margin-top: 20px;
-        padding: 14px 30px;
-        border: none;
-        border-radius: 12px;
-        background: #3b82f6;
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    button:active {
-        transform: scale(0.95);
-    }
-    #message {
-        margin-top: 15px;
-        min-height: 30px;
-        font-size: 18px;
-    }
+}
+
+/* 結果 */
+
+#resultScreen h2 {
+    font-size: 40px;
+}
+
+.score {
+    font-size: 55px;
+    font-weight: bold;
+    color: #60a5fa;
+}
+
+.highscore {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.rank {
+    font-size: 25px;
+    margin-bottom: 30px;
+}
 </style>
 </head>
+
 <body>
-<div class="game">
-    <h1>⚡ 反射神経ゲーム</h1>
-    <div class="info">
-        <div>ROUND: <span id="round">0</span>/10</div>
-        <div>TIME: <span id="time">0.000</span>秒</div>
+
+<div id="app">
+
+    <!-- タイトル画面 -->
+
+    <div id="titleScreen">
+
+        <h1>REFLEX<br>BLAST</h1>
+
+        <p class="subtitle">
+            30秒で限界を超えろ。
+        </p>
+
+        <button onclick="startGame()">
+            GAME START
+        </button>
+
+        <p>
+            🏆 HIGH SCORE:
+            <span id="titleHighScore">0</span>
+        </p>
+
     </div>
-    <div id="arena">
-        <div id="target"></div>
+
+
+    <!-- ゲーム画面 -->
+
+    <div id="gameScreen" class="hidden">
+
+        <div class="status">
+
+            <div>
+                SCORE:
+                <span id="score">0</span>
+            </div>
+
+            <div>
+                COMBO:
+                <span id="combo">0</span>
+            </div>
+
+            <div>
+                TIME:
+                <span id="time">30</span>
+            </div>
+
+        </div>
+
+        <div id="arena">
+
+            <div id="target"></div>
+
+            <div id="comboText"></div>
+
+        </div>
+
     </div>
-    <button id="start">ゲーム開始！</button>
-    <div id="message">
-        赤い円が出たら、できるだけ早くタップ！
+
+
+    <!-- 結果画面 -->
+
+    <div id="resultScreen" class="hidden">
+
+        <h2>TIME UP!</h2>
+
+        <div class="rank" id="rank"></div>
+
+        <div class="score" id="finalScore">
+            0
+        </div>
+
+        <p>POINTS</p>
+
+        <div class="highscore">
+            🏆 HIGH SCORE:
+            <span id="resultHighScore">0</span>
+        </div>
+
+        <button onclick="startGame()">
+            AGAIN
+        </button>
+
+        <br><br>
+
+        <button onclick="showTitle()">
+            TITLE
+        </button>
+
     </div>
+
 </div>
+
+
 <script>
-const arena = document.getElementById("arena");
-const target = document.getElementById("target");
-const startButton = document.getElementById("start");
-const roundText = document.getElementById("round");
-const timeText = document.getElementById("time");
-const message = document.getElementById("message");
-let round = 0;
-let totalTime = 0;
-let startTime = 0;
-let waitingTimer = null;
-function randomPosition() {
-    const maxX = arena.clientWidth - target.offsetWidth;
-    const maxY = arena.clientHeight - target.offsetHeight;
-    target.style.left = Math.random() * maxX + "px";
-    target.style.top = Math.random() * maxY + "px";
+
+let score = 0;
+let combo = 0;
+
+let timeLeft = 30;
+
+let gameRunning = false;
+
+let timer;
+
+
+/* HTML要素 */
+
+const titleScreen =
+    document.getElementById("titleScreen");
+
+const gameScreen =
+    document.getElementById("gameScreen");
+
+const resultScreen =
+    document.getElementById("resultScreen");
+
+const target =
+    document.getElementById("target");
+
+const arena =
+    document.getElementById("arena");
+
+const comboText =
+    document.getElementById("comboText");
+
+
+/* ハイスコア */
+
+let highScore =
+    Number(localStorage.getItem("reflexHighScore")) || 0;
+
+document.getElementById("titleHighScore").textContent =
+    highScore;
+
+
+/* ゲーム開始 */
+
+function startGame() {
+
+    score = 0;
+    combo = 0;
+    timeLeft = 30;
+
+    gameRunning = true;
+
+    titleScreen.classList.add("hidden");
+    resultScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+    updateDisplay();
+
+    spawnTarget();
+
+    clearInterval(timer);
+
+    timer = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("time").textContent =
+            timeLeft;
+
+        if (timeLeft <= 0) {
+
+            endGame();
+
+        }
+
+    }, 1000);
 }
-function showTarget() {
-    randomPosition();
+
+
+/* ターゲット出現 */
+
+function spawnTarget() {
+
+    if (!gameRunning) return;
+
+    const size =
+        Math.max(35, 70 - combo * 1.5);
+
+    target.style.width = size + "px";
+    target.style.height = size + "px";
+
+    const maxX =
+        arena.clientWidth - size;
+
+    const maxY =
+        arena.clientHeight - size;
+
+    const x =
+        Math.random() * maxX;
+
+    const y =
+        Math.random() * maxY;
+
+    target.style.left = x + "px";
+    target.style.top = y + "px";
+
     target.style.display = "block";
-    startTime = performance.now();
 }
-function nextRound() {
-    if (round >= 10) {
-        target.style.display = "none";
-        const average = totalTime / 10;
-        message.innerHTML =
-            `🎉 終了！<br>合計：${totalTime.toFixed(3)}秒<br>` +
-            `平均：${average.toFixed(3)}秒`;
-        startButton.textContent = "もう一度プレイ";
-        return;
+
+
+/* ターゲットを押した */
+
+target.addEventListener("pointerdown", () => {
+
+    if (!gameRunning) return;
+
+    score++;
+
+    combo++;
+
+    /*
+        コンボボーナス
+        5コンボごとに追加ポイント
+    */
+
+    if (combo % 5 === 0) {
+
+        score += 5;
+
+        showCombo("🔥 " + combo + " COMBO! +5");
+
+    } else {
+
+        showCombo("+" + combo);
+
     }
-    round++;
-    roundText.textContent = round;
-    message.textContent = "準備……";
-    // 0.5〜1.5秒待ってから出現
-    const delay = 500 + Math.random() * 1000;
-    waitingTimer = setTimeout(showTarget, delay);
+
+    updateDisplay();
+
+    spawnTarget();
+
+});
+
+
+/* 表示更新 */
+
+function updateDisplay() {
+
+    document.getElementById("score").textContent =
+        score;
+
+    document.getElementById("combo").textContent =
+        combo;
+
+    document.getElementById("time").textContent =
+        timeLeft;
+
 }
-target.addEventListener("click", () => {
-    const reaction = (performance.now() - startTime) / 1000;
-    totalTime += reaction;
-    timeText.textContent = reaction.toFixed(3);
+
+
+/* コンボ表示 */
+
+function showCombo(text) {
+
+    comboText.textContent = text;
+
+    comboText.classList.remove("comboAnimation");
+
+    /*
+        アニメーションを再起動するため
+        少しだけ時間を空ける
+    */
+
+    void comboText.offsetWidth;
+
+    comboText.classList.add("comboAnimation");
+
+}
+
+
+/* ゲーム終了 */
+
+function endGame() {
+
+    gameRunning = false;
+
+    clearInterval(timer);
+
     target.style.display = "none";
-    nextRound();
-});
-startButton.addEventListener("click", () => {
-    clearTimeout(waitingTimer);
-    round = 0;
-    totalTime = 0;
-    roundText.textContent = "0";
-    timeText.textContent = "0.000";
-    startButton.style.display = "none";
-    nextRound();
-});
+
+    /*
+        ハイスコア更新
+    */
+
+    if (score > highScore) {
+
+        highScore = score;
+
+        localStorage.setItem(
+            "reflexHighScore",
+            highScore
+        );
+
+    }
+
+
+    /*
+        ランク判定
+    */
+
+    let rank;
+
+    if (score >= 100) {
+
+        rank = "👑 LEGEND";
+
+    } else if (score >= 70) {
+
+        rank = "🔥 MASTER";
+
+    } else if (score >= 45) {
+
+        rank = "⚡ EXPERT";
+
+    } else if (score >= 25) {
+
+        rank = "👍 GOOD";
+
+    } else {
+
+        rank = "🐣 BEGINNER";
+
+    }
+
+
+    document.getElementById("finalScore").textContent =
+        score;
+
+    document.getElementById("resultHighScore").textContent =
+        highScore;
+
+    document.getElementById("rank").textContent =
+        rank;
+
+    gameScreen.classList.add("hidden");
+
+    resultScreen.classList.remove("hidden");
+
+}
+
+
+/* タイトルに戻る */
+
+function showTitle() {
+
+    resultScreen.classList.add("hidden");
+
+    titleScreen.classList.remove("hidden");
+
+    document.getElementById("titleHighScore").textContent =
+        highScore;
+
+}
+
 </script>
+
 </body>
 </html>
