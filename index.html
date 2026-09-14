@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>REFLEX BLAST</title>
+<title>REFLEX BLAST 3</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -15,109 +16,214 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background: radial-gradient(circle at center, #243b55, #0b1020);
+
+    background:
+        radial-gradient(circle at center, #182848, #050812);
+
     color: white;
+
     font-family: system-ui, sans-serif;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     overflow: hidden;
 }
 
 #app {
     width: 100%;
-    max-width: 650px;
-    padding: 20px;
+    max-width: 700px;
+    padding: 15px;
+
     text-align: center;
 }
 
+/* =====================
+   TITLE
+===================== */
+
 h1 {
-    font-size: clamp(36px, 10vw, 60px);
-    margin: 0;
-    letter-spacing: 4px;
+    font-size: clamp(38px, 11vw, 70px);
+
+    line-height: 0.9;
+
+    letter-spacing: 5px;
+
+    margin: 0 0 15px;
 }
 
 .subtitle {
     opacity: 0.7;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 button {
     border: none;
+
     border-radius: 15px;
+
     padding: 15px 35px;
+
     font-size: 20px;
+
     font-weight: bold;
+
     color: white;
-    background: #3b82f6;
-    box-shadow: 0 7px 0 #1d4ed8;
+
+    background: #2563eb;
+
+    box-shadow: 0 6px 0 #1e40af;
+
     cursor: pointer;
 }
 
 button:active {
     transform: translateY(5px);
-    box-shadow: 0 2px 0 #1d4ed8;
+
+    box-shadow: 0 1px 0 #1e40af;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* ゲーム画面 */
-
-#gameScreen {
-    width: 100%;
-}
+/* =====================
+   STATUS
+===================== */
 
 .status {
-    display: flex;
-    justify-content: space-between;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 5px;
+
     margin-bottom: 12px;
-    font-size: 18px;
+
+    font-size: 15px;
+
     font-weight: bold;
 }
 
 .status span {
-    color: #60a5fa;
+    display: block;
+
+    font-size: 22px;
+
+    margin-top: 3px;
 }
 
+/* =====================
+   ARENA
+===================== */
+
 #arena {
+
     position: relative;
+
     width: 100%;
+
     height: 65vh;
+
     min-height: 350px;
+
     max-height: 550px;
 
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(255,255,255,0.15);
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.07),
+            rgba(255,255,255,0.02)
+        );
+
+    border: 2px solid
+        rgba(255,255,255,0.15);
+
     border-radius: 25px;
+
     overflow: hidden;
 }
 
-#target {
-    position: absolute;
+/* =====================
+   TARGET
+===================== */
 
-    width: 70px;
-    height: 70px;
+.target {
+
+    position: absolute;
 
     border-radius: 50%;
 
-    background: radial-gradient(circle at 35% 30%, white, #60a5fa 25%, #2563eb 60%, #1e3a8a);
+    width: 65px;
+    height: 65px;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+    transition:
+        transform 0.08s;
+}
+
+.target:active {
+    transform: scale(0.85);
+}
+
+/* BLUE TARGET */
+
+.good {
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            white,
+            #60a5fa 25%,
+            #2563eb 60%,
+            #172554
+        );
 
     box-shadow:
         0 0 15px #60a5fa,
         0 0 35px #2563eb;
-
-    display: none;
 }
 
+/* BOMB */
+
+.bomb {
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #fff,
+            #fb7185 15%,
+            #dc2626 50%,
+            #450a0a
+        );
+
+    box-shadow:
+        0 0 15px #fb7185,
+        0 0 35px #dc2626;
+}
+
+/* =====================
+   COMBO
+===================== */
+
 #comboText {
+
     position: absolute;
+
     left: 50%;
     top: 45%;
-    transform: translate(-50%, -50%);
+
+    transform:
+        translate(-50%, -50%);
 
     font-size: 32px;
+
     font-weight: bold;
 
     pointer-events: none;
@@ -126,47 +232,98 @@ button:active {
 }
 
 .comboAnimation {
-    animation: combo 0.5s ease-out;
+
+    animation:
+        combo 0.45s ease-out;
 }
 
 @keyframes combo {
+
     0% {
-        transform: translate(-50%, -50%) scale(0.5);
+        transform:
+            translate(-50%, -50%)
+            scale(0.4);
+
         opacity: 0;
     }
 
     40% {
-        transform: translate(-50%, -50%) scale(1.3);
+        transform:
+            translate(-50%, -50%)
+            scale(1.3);
+
         opacity: 1;
     }
 
     100% {
-        transform: translate(-50%, -50%) scale(1);
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
         opacity: 0;
     }
 }
 
-/* 結果 */
+/* =====================
+   DAMAGE
+===================== */
+
+.damage {
+
+    animation:
+        shake 0.35s;
+}
+
+@keyframes shake {
+
+    0%,100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-12px);
+    }
+
+    75% {
+        transform: translateX(12px);
+    }
+}
+
+/* =====================
+   RESULT
+===================== */
 
 #resultScreen h2 {
-    font-size: 40px;
+
+    font-size: 42px;
+
+    margin-bottom: 10px;
 }
 
 .score {
-    font-size: 55px;
-    font-weight: bold;
-    color: #60a5fa;
-}
 
-.highscore {
-    font-size: 20px;
-    margin-bottom: 30px;
+    font-size: 65px;
+
+    font-weight: bold;
+
+    margin: 5px;
+
 }
 
 .rank {
-    font-size: 25px;
-    margin-bottom: 30px;
+
+    font-size: 26px;
+
+    margin: 15px;
 }
+
+.highscore {
+
+    margin: 20px;
+
+    opacity: 0.8;
+}
+
 </style>
 </head>
 
@@ -174,100 +331,144 @@ button:active {
 
 <div id="app">
 
-    <!-- タイトル画面 -->
 
-    <div id="titleScreen">
+<!-- =====================
+     TITLE
+===================== -->
 
-        <h1>REFLEX<br>BLAST</h1>
+<div id="titleScreen">
 
-        <p class="subtitle">
-            30秒で限界を超えろ。
-        </p>
+    <h1>
+        REFLEX<br>
+        BLAST
+    </h1>
 
-        <button onclick="startGame()">
-            GAME START
-        </button>
+    <p class="subtitle">
+        EVIL MODE
+    </p>
 
-        <p>
-            🏆 HIGH SCORE:
-            <span id="titleHighScore">0</span>
-        </p>
+    <button onclick="startGame()">
+        GAME START
+    </button>
+
+    <p>
+        🏆 HIGH SCORE:
+        <span id="titleHighScore">0</span>
+    </p>
+
+</div>
+
+
+<!-- =====================
+     GAME
+===================== -->
+
+<div id="gameScreen" class="hidden">
+
+    <div class="status">
+
+        <div>
+            SCORE
+            <span id="score">0</span>
+        </div>
+
+        <div>
+            COMBO
+            <span id="combo">0</span>
+        </div>
+
+        <div>
+            LEVEL
+            <span id="level">1</span>
+        </div>
+
+        <div>
+            ❤️
+            <span id="lives">3</span>
+        </div>
 
     </div>
 
+    <div class="status">
 
-    <!-- ゲーム画面 -->
-
-    <div id="gameScreen" class="hidden">
-
-        <div class="status">
-
-            <div>
-                SCORE:
-                <span id="score">0</span>
-            </div>
-
-            <div>
-                COMBO:
-                <span id="combo">0</span>
-            </div>
-
-            <div>
-                TIME:
-                <span id="time">30</span>
-            </div>
-
-        </div>
-
-        <div id="arena">
-
-            <div id="target"></div>
-
-            <div id="comboText"></div>
-
+        <div>
+            TIME
+            <span id="time">30</span>
         </div>
 
     </div>
 
+    <div id="arena">
 
-    <!-- 結果画面 -->
-
-    <div id="resultScreen" class="hidden">
-
-        <h2>TIME UP!</h2>
-
-        <div class="rank" id="rank"></div>
-
-        <div class="score" id="finalScore">
-            0
-        </div>
-
-        <p>POINTS</p>
-
-        <div class="highscore">
-            🏆 HIGH SCORE:
-            <span id="resultHighScore">0</span>
-        </div>
-
-        <button onclick="startGame()">
-            AGAIN
-        </button>
-
-        <br><br>
-
-        <button onclick="showTitle()">
-            TITLE
-        </button>
+        <div id="comboText"></div>
 
     </div>
 
 </div>
 
 
+<!-- =====================
+     RESULT
+===================== -->
+
+<div id="resultScreen" class="hidden">
+
+    <h2 id="resultTitle">
+        GAME OVER
+    </h2>
+
+    <div
+        class="rank"
+        id="rank">
+    </div>
+
+    <div
+        class="score"
+        id="finalScore">
+        0
+    </div>
+
+    <p>
+        POINTS
+    </p>
+
+    <div class="highscore">
+
+        🏆 HIGH SCORE:
+        <span id="resultHighScore">
+            0
+        </span>
+
+    </div>
+
+    <button onclick="startGame()">
+        AGAIN
+    </button>
+
+    <br><br>
+
+    <button onclick="showTitle()">
+        TITLE
+    </button>
+
+</div>
+
+</div>
+
+
 <script>
 
+/* =====================
+   VARIABLES
+===================== */
+
 let score = 0;
+
 let combo = 0;
+
+let level = 1;
+
+let lives = 3;
 
 let timeLeft = 30;
 
@@ -275,54 +476,95 @@ let gameRunning = false;
 
 let timer;
 
+let spawnTimer;
 
-/* HTML要素 */
+
+/* =====================
+   ELEMENTS
+===================== */
 
 const titleScreen =
-    document.getElementById("titleScreen");
+    document.getElementById(
+        "titleScreen"
+    );
 
 const gameScreen =
-    document.getElementById("gameScreen");
+    document.getElementById(
+        "gameScreen"
+    );
 
 const resultScreen =
-    document.getElementById("resultScreen");
-
-const target =
-    document.getElementById("target");
+    document.getElementById(
+        "resultScreen"
+    );
 
 const arena =
-    document.getElementById("arena");
+    document.getElementById(
+        "arena"
+    );
 
 const comboText =
-    document.getElementById("comboText");
+    document.getElementById(
+        "comboText"
+    );
 
 
-/* ハイスコア */
+/* =====================
+   HIGH SCORE
+===================== */
 
 let highScore =
-    Number(localStorage.getItem("reflexHighScore")) || 0;
+    Number(
+        localStorage.getItem(
+            "reflexHighScore"
+        )
+    ) || 0;
 
-document.getElementById("titleHighScore").textContent =
-    highScore;
+document.getElementById(
+    "titleHighScore"
+).textContent = highScore;
 
 
-/* ゲーム開始 */
+/* =====================
+   START
+===================== */
 
 function startGame() {
 
     score = 0;
+
     combo = 0;
+
+    level = 1;
+
+    lives = 3;
+
     timeLeft = 30;
 
     gameRunning = true;
 
-    titleScreen.classList.add("hidden");
-    resultScreen.classList.add("hidden");
-    gameScreen.classList.remove("hidden");
+
+    titleScreen
+        .classList
+        .add("hidden");
+
+    resultScreen
+        .classList
+        .add("hidden");
+
+    gameScreen
+        .classList
+        .remove("hidden");
+
+
+    arena.innerHTML =
+        '<div id="comboText"></div>';
 
     updateDisplay();
 
+
     spawnTarget();
+
 
     clearInterval(timer);
 
@@ -330,137 +572,403 @@ function startGame() {
 
         timeLeft--;
 
-        document.getElementById("time").textContent =
-            timeLeft;
+        updateDisplay();
 
         if (timeLeft <= 0) {
 
-            endGame();
+            endGame(
+                "TIME UP!"
+            );
 
         }
 
     }, 1000);
+
 }
 
 
-/* ターゲット出現 */
+/* =====================
+   SPAWN TARGET
+===================== */
 
 function spawnTarget() {
 
-    if (!gameRunning) return;
+    if (!gameRunning)
+        return;
 
-    const size =
-        Math.max(35, 70 - combo * 1.5);
-
-    target.style.width = size + "px";
-    target.style.height = size + "px";
-
-    const maxX =
-        arena.clientWidth - size;
-
-    const maxY =
-        arena.clientHeight - size;
-
-    const x =
-        Math.random() * maxX;
-
-    const y =
-        Math.random() * maxY;
-
-    target.style.left = x + "px";
-    target.style.top = y + "px";
-
-    target.style.display = "block";
-}
-
-
-/* ターゲットを押した */
-
-target.addEventListener("pointerdown", () => {
-
-    if (!gameRunning) return;
-
-    score++;
-
-    combo++;
 
     /*
-        コンボボーナス
-        5コンボごとに追加ポイント
+        20%の確率で爆弾
     */
 
-    if (combo % 5 === 0) {
+    const isBomb =
+        Math.random() < 0.20;
 
-        score += 5;
 
-        showCombo("🔥 " + combo + " COMBO! +5");
+    const target =
+        document.createElement(
+            "div"
+        );
+
+
+    target.classList.add(
+        "target"
+    );
+
+
+    if (isBomb) {
+
+        target.classList.add(
+            "bomb"
+        );
 
     } else {
 
-        showCombo("+" + combo);
+        target.classList.add(
+            "good"
+        );
 
     }
+
+
+    /*
+        レベルが上がるほど
+        ターゲットを小さくする
+    */
+
+    const size =
+        Math.max(
+            32,
+            68 - level * 4
+        );
+
+
+    target.style.width =
+        size + "px";
+
+    target.style.height =
+        size + "px";
+
+
+    const maxX =
+        arena.clientWidth -
+        size;
+
+    const maxY =
+        arena.clientHeight -
+        size;
+
+
+    target.style.left =
+        Math.random() *
+        maxX + "px";
+
+    target.style.top =
+        Math.random() *
+        maxY + "px";
+
+
+    arena.appendChild(
+        target
+    );
+
+
+    /*
+        爆弾
+    */
+
+    target.addEventListener(
+        "pointerdown",
+        () => {
+
+            if (!gameRunning)
+                return;
+
+
+            if (
+                target.classList
+                .contains("bomb")
+            ) {
+
+                hitBomb();
+
+            } else {
+
+                hitTarget();
+
+            }
+
+        }
+    );
+
+
+    /*
+        少し時間が経ったら
+        ターゲットを消して
+        次を出す
+    */
+
+    const duration =
+        Math.max(
+            300,
+            1200 -
+            level * 70
+        );
+
+
+    spawnTimer =
+        setTimeout(() => {
+
+            if (
+                target.parentNode
+            ) {
+
+                target.remove();
+
+                /*
+                    ターゲットを
+                    逃したらコンボ解除
+                */
+
+                combo = 0;
+
+                updateDisplay();
+
+            }
+
+            spawnTarget();
+
+        }, duration);
+
+}
+
+
+/* =====================
+   GOOD TARGET
+===================== */
+
+function hitTarget() {
+
+    combo++;
+
+
+    /*
+        基本1点
+        コンボ5以上で追加点
+    */
+
+    let points = 1;
+
+
+    if (combo >= 5) {
+
+        points +=
+            Math.floor(
+                combo / 5
+            );
+
+    }
+
+
+    score += points;
+
+
+    /*
+        10点ごとにレベルアップ
+    */
+
+    const newLevel =
+        Math.floor(
+            score / 10
+        ) + 1;
+
+
+    if (
+        newLevel >
+        level
+    ) {
+
+        level =
+            newLevel;
+
+        showCombo(
+            "⚡ LEVEL " +
+            level
+        );
+
+    } else {
+
+        showCombo(
+            "+" + points
+        );
+
+    }
+
 
     updateDisplay();
 
     spawnTarget();
 
-});
+}
 
 
-/* 表示更新 */
+/* =====================
+   BOMB
+===================== */
 
-function updateDisplay() {
+function hitBomb() {
 
-    document.getElementById("score").textContent =
-        score;
+    lives--;
 
-    document.getElementById("combo").textContent =
-        combo;
+    combo = 0;
 
-    document.getElementById("time").textContent =
-        timeLeft;
+
+    arena.classList
+        .remove("damage");
+
+    void arena.offsetWidth;
+
+    arena.classList
+        .add("damage");
+
+
+    showCombo(
+        "💥 BOMB!"
+    );
+
+
+    updateDisplay();
+
+
+    if (lives <= 0) {
+
+        endGame(
+            "💥 BOMB GAME OVER"
+        );
+
+    } else {
+
+        spawnTarget();
+
+    }
 
 }
 
 
-/* コンボ表示 */
+/* =====================
+   COMBO TEXT
+===================== */
 
 function showCombo(text) {
 
-    comboText.textContent = text;
-
-    comboText.classList.remove("comboAnimation");
-
     /*
-        アニメーションを再起動するため
-        少しだけ時間を空ける
+        毎回最新の要素を取得
     */
 
-    void comboText.offsetWidth;
+    const element =
+        document.getElementById(
+            "comboText"
+        );
 
-    comboText.classList.add("comboAnimation");
+
+    element.textContent =
+        text;
+
+
+    element.classList
+        .remove(
+            "comboAnimation"
+        );
+
+
+    void element.offsetWidth;
+
+
+    element.classList
+        .add(
+            "comboAnimation"
+        );
 
 }
 
 
-/* ゲーム終了 */
+/* =====================
+   DISPLAY
+===================== */
 
-function endGame() {
+function updateDisplay() {
+
+    document.getElementById(
+        "score"
+    ).textContent = score;
+
+
+    document.getElementById(
+        "combo"
+    ).textContent = combo;
+
+
+    document.getElementById(
+        "level"
+    ).textContent = level;
+
+
+    document.getElementById(
+        "lives"
+    ).textContent = lives;
+
+
+    document.getElementById(
+        "time"
+    ).textContent = timeLeft;
+
+}
+
+
+/* =====================
+   END GAME
+===================== */
+
+function endGame(reason) {
+
+    if (!gameRunning)
+        return;
+
 
     gameRunning = false;
 
+
     clearInterval(timer);
 
-    target.style.display = "none";
+    clearTimeout(spawnTimer);
+
 
     /*
-        ハイスコア更新
+        ターゲットを全部消す
     */
 
-    if (score > highScore) {
+    const targets =
+        document.querySelectorAll(
+            ".target"
+        );
 
-        highScore = score;
+
+    targets.forEach(
+        t => t.remove()
+    );
+
+
+    /*
+        ハイスコア
+    */
+
+    if (
+        score >
+        highScore
+    ) {
+
+        highScore =
+            score;
 
         localStorage.setItem(
             "reflexHighScore",
@@ -471,59 +979,101 @@ function endGame() {
 
 
     /*
-        ランク判定
+        ランク
     */
 
     let rank;
 
+
     if (score >= 100) {
 
-        rank = "👑 LEGEND";
+        rank =
+            "👑 LEGEND";
 
-    } else if (score >= 70) {
+    } else if (
+        score >= 75
+    ) {
 
-        rank = "🔥 MASTER";
+        rank =
+            "🔥 MASTER";
 
-    } else if (score >= 45) {
+    } else if (
+        score >= 50
+    ) {
 
-        rank = "⚡ EXPERT";
+        rank =
+            "⚡ EXPERT";
 
-    } else if (score >= 25) {
+    } else if (
+        score >= 30
+    ) {
 
-        rank = "👍 GOOD";
+        rank =
+            "👍 GOOD";
 
     } else {
 
-        rank = "🐣 BEGINNER";
+        rank =
+            "🐣 BEGINNER";
 
     }
 
 
-    document.getElementById("finalScore").textContent =
-        score;
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        reason;
 
-    document.getElementById("resultHighScore").textContent =
-        highScore;
 
-    document.getElementById("rank").textContent =
+    document.getElementById(
+        "rank"
+    ).textContent =
         rank;
 
-    gameScreen.classList.add("hidden");
 
-    resultScreen.classList.remove("hidden");
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        score;
+
+
+    document.getElementById(
+        "resultHighScore"
+    ).textContent =
+        highScore;
+
+
+    gameScreen
+        .classList
+        .add("hidden");
+
+
+    resultScreen
+        .classList
+        .remove("hidden");
 
 }
 
 
-/* タイトルに戻る */
+/* =====================
+   TITLE
+===================== */
 
 function showTitle() {
 
-    resultScreen.classList.add("hidden");
+    resultScreen
+        .classList
+        .add("hidden");
 
-    titleScreen.classList.remove("hidden");
 
-    document.getElementById("titleHighScore").textContent =
+    titleScreen
+        .classList
+        .remove("hidden");
+
+
+    document.getElementById(
+        "titleHighScore"
+    ).textContent =
         highScore;
 
 }
